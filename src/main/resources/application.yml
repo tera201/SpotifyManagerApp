@@ -1,0 +1,16 @@
+app:
+  localePath: "src/main/resources/"
+spring:
+  jackson:
+    default-property-inclusion: non_null
+  main:
+    lazy-initialization: true
+
+spotify:
+  client: @spotify.client@
+  secret: @spotify.secret@
+
+server:
+  error:
+    include-message: always
+  port: 3000
