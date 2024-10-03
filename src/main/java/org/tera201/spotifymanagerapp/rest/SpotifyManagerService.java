@@ -59,7 +59,7 @@ public class SpotifyManagerService {
             String artist = parts[1];
             return findTrackUri(track, artist);
         } else {
-            System.err.println("Ошибка при разбиении строки: " + playlistName);
+            log.error("Split failed for line: {}", value);
             return null;
         }
     }
