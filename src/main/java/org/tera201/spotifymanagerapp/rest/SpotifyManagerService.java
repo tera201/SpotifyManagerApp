@@ -33,19 +33,19 @@ public class SpotifyManagerService {
         Map<String, List<String>> files = fileService.processAllFilesInPlaylists();
         userService.getAccessToken();
         for (Map.Entry<String, List<String>> entry : files.entrySet()) {
-                String playlistId = createPlaylistIfNotExist(entry.getKey());
-                Set<String> tracksUri = new HashSet<>();
-                for (String value : entry.getValue()) {
-                    String[] parts = value.split(" - ");
-                    if (parts.length >= 2) {
-                        String track = parts[0];
-                        String artist = parts[1];
-                        tracksUri.add(findTrackUri(track, artist));
-                    } else {
-                        log.error("Split failed for line: {}", entry.getKey());
-                    }
+            String playlistId = createPlaylistIfNotExist(entry.getKey());
+            List<String> tracksUri = new ArrayList<>();
+            for (String value : entry.getValue()) {
+                String[] parts = value.split(" - ");
+                if (parts.length >= 2) {
+                    String track = parts[0];
+                    String artist = parts[1];
+                    tracksUri.add(findTrackUri(track, artist));
+                } else {
+                    log.error("Split failed for line: {}", entry.getKey());
                 }
-                addNewTracks(tracksUri, playlistId);
+            }
+            addNewTracks(tracksUri, playlistId);
         }
         context.close();
     }
@@ -71,11 +71,11 @@ public class SpotifyManagerService {
         return "";
     }
 
-    public void addNewTracks(Set<String> tracksUri, String playlistId) {
-        Set<String> playlistTracksUri = playlistService.getPlaylistItems(playlistId).getItems().stream().map(it -> it.getTrack().getUri()).collect(Collectors.toSet());
+    public void addNewTracks(List<String> tracksUri, String playlistId) {
+        List<String> playlistTracksUri = playlistService.getPlaylistItems(playlistId).getItems().stream().map(it -> it.getTrack().getUri()).toList();
         tracksUri.removeAll(playlistTracksUri);
         if (!tracksUri.isEmpty()) {
-            partitionList(tracksUri.stream().toList(), 50).forEach(it ->
+            partitionList(tracksUri, 50).reversed().forEach(it ->
                     playlistService.addItemsToPlaylist(playlistId, it));
         }
     }
