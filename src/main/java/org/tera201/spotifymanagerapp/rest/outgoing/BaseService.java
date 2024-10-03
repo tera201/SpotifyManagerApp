@@ -22,10 +22,10 @@ public abstract class BaseService {
 
        HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + credentials());
-        log.info("Headers: {}", headers);
+        log.debug("Headers: {}", headers);
         ResponseEntity<T> response = restTemplate.exchange(url, HttpMethod.GET,
                 new HttpEntity<>(body, headers), responseType);
-        log.info(response);
+        log.debug(response);
         return response;
     }
 
@@ -34,10 +34,10 @@ public abstract class BaseService {
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(dataStorage.getAccessToken());
-        log.info("Headers: {}", headers);
+        log.debug("Headers: {}", headers);
         ResponseEntity<T> response = restTemplate.exchange(url, HttpMethod.GET,
                 new HttpEntity<>(body, headers), responseType);
-        log.info(response);
+        log.debug(response);
         return response;
     }
 
@@ -47,10 +47,10 @@ public abstract class BaseService {
         HttpHeaders headers = new HttpHeaders();
         headers.add("Authorization", "Basic " + credentials());
         headers.add("Content-Type", contentType);
-        log.info("Headers: {}", headers);
+        log.debug("Headers: {}", headers);
         ResponseEntity<T> response = restTemplate.exchange(url, HttpMethod.POST,
                 new HttpEntity<>(body, headers), responseType);
-        log.info(response);
+        log.debug(response);
         return response;
     }
 
@@ -60,10 +60,10 @@ public abstract class BaseService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(dataStorage.getAccessToken());
         headers.setContentType(contentType);
-        log.info("Headers: {}", headers);
+        log.debug("Headers: {}", headers);
         ResponseEntity<T> response = restTemplate.exchange(url, HttpMethod.POST,
                 new HttpEntity<>(body, headers), responseType);
-        log.info(response);
+        log.debug(response);
         return response;
     }
 
