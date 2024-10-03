@@ -18,7 +18,6 @@ class DesktopOpener {
     @Autowired
     protected AppProperties appProperties;
 
-    private static final String REDIRECT_URI = "http://localhost:";
     private static final String SCOPE = "user-read-private user-read-email";
 
     @EventListener(ApplicationReadyEvent.class)
@@ -46,7 +45,7 @@ class DesktopOpener {
                 "response_type=code" +
                         "&client_id=" + appProperties.getClient() +
                         "&scope=" + SCOPE +
-                        "&redirect_uri=" + REDIRECT_URI + appProperties.getPort() +
+                        "&redirect_uri=" + appProperties.getRedirectUrl() +
                         "&state=" + state, null);
         return uri.toString();
     }
