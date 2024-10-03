@@ -1,18 +1,37 @@
 package org.tera201.spotifymanagerapp.rest.outgoing;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
+import org.tera201.spotifymanagerapp.rest.DataStorage;
+import org.tera201.spotifymanagerapp.rest.model.GetPlaylistsResponseModel;
+import org.tera201.spotifymanagerapp.rest.model.PlaylistCreateRequest;
+import org.tera201.spotifymanagerapp.rest.model.PlaylistResponseModel;
 
 
 @Service
 public class PlaylistService extends BaseService {
+    @Autowired
+    private DataStorage dataStorage;
+
+
+    private static final String URL = "https://api.spotify.com/v1/users/%s/playlists";
+    private static final String MY_PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists0";
 
     public void getPlaylist() {}
 
-    public void getUsersPlaylist() {}
+    public GetPlaylistsResponseModel getUsersPlaylists() {
+        return getRequestBearer(URL.formatted(dataStorage.getUserId()), null, GetPlaylistsResponseModel.class).getBody();
+    }
 
-    public void getCurrentUserPlaylist() {}
+    public void getCurrentUserPlaylists() {
+        getRequestBearer(MY_PLAYLISTS_URL, null, String.class);
+    }
 
     public void addItemsToPlaylist() {}
 
-    public void createPlaylist() {}
+    public PlaylistResponseModel createPlaylist(String playlistName, String description, Boolean isPublic) {
+        PlaylistCreateRequest playlist = new PlaylistCreateRequest(playlistName, description, isPublic);
+        return postRequestBearer(URL.formatted(dataStorage.getUserId()), playlist, PlaylistResponseModel.class, MediaType.APPLICATION_JSON).getBody();
+    }
 }
