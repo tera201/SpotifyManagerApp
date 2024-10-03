@@ -37,7 +37,7 @@ public class FileService {
                 fileContentsMap.put(playlist, fileLines);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            log.error(e.getMessage());
         }
 
         return fileContentsMap;

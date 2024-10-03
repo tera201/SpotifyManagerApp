@@ -10,7 +10,7 @@ import org.tera201.spotifymanagerapp.rest.DataStorage;
 import org.tera201.spotifymanagerapp.rest.SpotifyManagerService;
 
 /**
- * Controller that receives requests from user and sends data to {@link SpotifyManagerService}
+ * Controller that receives requests from spotify and sends data to {@link SpotifyManagerService}
  */
 @RestController
 @RequestMapping("/")
@@ -21,14 +21,9 @@ public class SpotifyAuthController {
     @Autowired
     private DataStorage dataStorage;
 
-    /**
-     * Definition for GET request
-     * @param code request's departure city or code
-     * @param state request's arrival city or code
-     */
     @GetMapping
-    public void getAvailableFly(@RequestParam(name = "code") String code,
-                                @RequestParam(name = "state") String state) {
+    public void getSpotifyCallback(@RequestParam(name = "code") String code,
+                                   @RequestParam(name = "state") String state) {
         dataStorage.setCode(code);
         dataStorage.setState(state);
         spotifyManagerService.processUserCode();
