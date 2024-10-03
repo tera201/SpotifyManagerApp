@@ -4,9 +4,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.tera201.spotifymanagerapp.rest.DataStorage;
+import org.tera201.spotifymanagerapp.rest.model.AddTracksRequest;
 import org.tera201.spotifymanagerapp.rest.model.GetPlaylistsResponseModel;
 import org.tera201.spotifymanagerapp.rest.model.PlaylistCreateRequest;
 import org.tera201.spotifymanagerapp.rest.model.PlaylistResponseModel;
+
+import java.util.List;
 
 
 @Service
@@ -16,7 +19,9 @@ public class PlaylistService extends BaseService {
 
 
     private static final String URL = "https://api.spotify.com/v1/users/%s/playlists";
-    private static final String MY_PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists0";
+    private static final String MY_PLAYLISTS_URL = "https://api.spotify.com/v1/me/playlists";
+    private static final String PLAYLIST_URL = "https://api.spotify.com/v1/playlists/%s";
+    private static final String TRACK_URL = PLAYLIST_URL + "/tracks";
 
     public void getPlaylist() {}
 
@@ -28,7 +33,10 @@ public class PlaylistService extends BaseService {
         getRequestBearer(MY_PLAYLISTS_URL, null, String.class);
     }
 
-    public void addItemsToPlaylist() {}
+    public void addItemsToPlaylist(String playlistId, List<String> items) {
+        AddTracksRequest tracksRequest = new AddTracksRequest(items, 0);
+        postRequestBearer(TRACK_URL.formatted(playlistId), tracksRequest, String.class, MediaType.APPLICATION_JSON);
+    }
 
     public PlaylistResponseModel createPlaylist(String playlistName, String description, Boolean isPublic) {
         PlaylistCreateRequest playlist = new PlaylistCreateRequest(playlistName, description, isPublic);
