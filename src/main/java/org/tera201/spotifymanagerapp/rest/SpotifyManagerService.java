@@ -12,7 +12,8 @@ import org.tera201.spotifymanagerapp.rest.outgoing.PlaylistService;
 import org.tera201.spotifymanagerapp.rest.outgoing.SearchService;
 import org.tera201.spotifymanagerapp.rest.outgoing.UserService;
 
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Service for redirecting request, checking params and formatting response
@@ -28,8 +29,24 @@ public class SpotifyManagerService {
     private final SearchService searchService;
 
     public void processUserCode() {
+        FileService fileService = new FileService();
+        Map<String, List<String>> files = fileService.processAllFilesInPlaylists();
         userService.getAccessToken();
-        String playlistId = createPlaylistIfNotExist("TEST2");
+        for (Map.Entry<String, List<String>> entry : files.entrySet()) {
+                String playlistId = createPlaylistIfNotExist(entry.getKey());
+                Set<String> tracksUri = new HashSet<>();
+                for (String value : entry.getValue()) {
+                    String[] parts = value.split(" - ");
+                    if (parts.length >= 2) {
+                        String track = parts[0];
+                        String artist = parts[1];
+                        tracksUri.add(findTrackUri(track, artist));
+                    } else {
+                        log.error("Split failed for line: {}", entry.getKey());
+                    }
+                }
+                addNewTracks(tracksUri, playlistId);
+        }
         context.close();
     }
 
@@ -45,12 +62,29 @@ public class SpotifyManagerService {
         return playlistId;
     }
 
-    public String findTrackId(String track, String author) {
+    public String findTrackUri(String track, String author) {
         SearchResponseModel search = searchService.search(track, author);
         Optional<TrackResponseModel> trackObj = search.getTracks().getItems().stream().findFirst();
         if (trackObj.isPresent()) {
-            return trackObj.get().getId();
+            return trackObj.get().getUri();
         }
         return "";
+    }
+
+    public void addNewTracks(Set<String> tracksUri, String playlistId) {
+        Set<String> playlistTracksUri = playlistService.getPlaylistItems(playlistId).getItems().stream().map(it -> it.getTrack().getUri()).collect(Collectors.toSet());
+        tracksUri.removeAll(playlistTracksUri);
+        if (!tracksUri.isEmpty()) {
+            partitionList(tracksUri.stream().toList(), 50).forEach(it ->
+                    playlistService.addItemsToPlaylist(playlistId, it));
+        }
+    }
+
+    public static List<List<String>> partitionList(List<String> list, int size) {
+        List<List<String>> partitioned = new ArrayList<>();
+        for (int i = 0; i < list.size(); i += size) {
+            partitioned.add(list.subList(i, Math.min(i + size, list.size())));
+        }
+        return partitioned;
     }
 }

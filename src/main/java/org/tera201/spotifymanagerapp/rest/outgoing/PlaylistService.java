@@ -35,8 +35,8 @@ public class PlaylistService extends BaseService {
         postRequestBearer(TRACK_URL.formatted(playlistId), tracksRequest, String.class, MediaType.APPLICATION_JSON);
     }
 
-    public void getPlaylistItems(String playlistId) {
-        getRequestBearer(TRACK_URL.formatted(playlistId), null, TracksPlaylistResponseModel.class);
+    public TracksPlaylistResponseModel getPlaylistItems(String playlistId) {
+        return getRequestBearer(TRACK_URL.formatted(playlistId), null, TracksPlaylistResponseModel.class).getBody();
     }
 
     public PlaylistResponseModel createPlaylist(String playlistName, String description, Boolean isPublic) {
