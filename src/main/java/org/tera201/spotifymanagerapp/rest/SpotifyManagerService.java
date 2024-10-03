@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.tera201.spotifymanagerapp.rest.model.GetPlaylistsResponseModel;
 import org.tera201.spotifymanagerapp.rest.model.PlaylistResponseModel;
 import org.tera201.spotifymanagerapp.rest.outgoing.PlaylistService;
+import org.tera201.spotifymanagerapp.rest.outgoing.SearchService;
 import org.tera201.spotifymanagerapp.rest.outgoing.UserService;
 
 import java.util.Optional;
@@ -22,10 +23,12 @@ public class SpotifyManagerService {
     private final ConfigurableApplicationContext context;
     private final UserService userService;
     private final PlaylistService playlistService;
+    private final SearchService searchService;
 
     public void processUserCode() {
         userService.getAccessToken();
-        createPlaylistIfNotExist("TEST2");
+//        createPlaylistIfNotExist("TEST2");
+        searchService.search("Круче Беллуччи", "Slavik Pogosov");
         context.close();
     }
 
@@ -39,5 +42,9 @@ public class SpotifyManagerService {
             playlistId = playlistService.createPlaylist(playlistName, "", false).getId();
         }
         return playlistId;
+    }
+
+    public String findTrackId(String track, String author) {
+        return "";
     }
 }
