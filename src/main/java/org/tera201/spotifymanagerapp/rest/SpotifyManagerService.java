@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.tera201.spotifymanagerapp.rest.model.GetPlaylistsResponseModel;
 import org.tera201.spotifymanagerapp.rest.model.PlaylistResponseModel;
 import org.tera201.spotifymanagerapp.rest.model.SearchResponseModel;
+import org.tera201.spotifymanagerapp.rest.model.TrackResponseModel;
 import org.tera201.spotifymanagerapp.rest.outgoing.PlaylistService;
 import org.tera201.spotifymanagerapp.rest.outgoing.SearchService;
 import org.tera201.spotifymanagerapp.rest.outgoing.UserService;
@@ -46,7 +47,7 @@ public class SpotifyManagerService {
 
     public String findTrackId(String track, String author) {
         SearchResponseModel search = searchService.search(track, author);
-        Optional<SearchResponseModel.TrackResponseModel.Track> trackObj = search.getTracks().getItems().stream().findFirst();
+        Optional<TrackResponseModel> trackObj = search.getTracks().getItems().stream().findFirst();
         if (trackObj.isPresent()) {
             return trackObj.get().getId();
         }

@@ -4,10 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.tera201.spotifymanagerapp.rest.DataStorage;
-import org.tera201.spotifymanagerapp.rest.model.AddTracksRequest;
-import org.tera201.spotifymanagerapp.rest.model.GetPlaylistsResponseModel;
-import org.tera201.spotifymanagerapp.rest.model.PlaylistCreateRequest;
-import org.tera201.spotifymanagerapp.rest.model.PlaylistResponseModel;
+import org.tera201.spotifymanagerapp.rest.model.*;
 
 import java.util.List;
 
@@ -36,6 +33,10 @@ public class PlaylistService extends BaseService {
     public void addItemsToPlaylist(String playlistId, List<String> items) {
         AddTracksRequest tracksRequest = new AddTracksRequest(items, 0);
         postRequestBearer(TRACK_URL.formatted(playlistId), tracksRequest, String.class, MediaType.APPLICATION_JSON);
+    }
+
+    public void getPlaylistItems(String playlistId) {
+        getRequestBearer(TRACK_URL.formatted(playlistId), null, TracksPlaylistResponseModel.class);
     }
 
     public PlaylistResponseModel createPlaylist(String playlistName, String description, Boolean isPublic) {
