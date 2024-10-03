@@ -9,6 +9,7 @@ spring:
 spotify:
   client: @spotify.client@
   secret: @spotify.secret@
+  redirectUrl: "http://localhost:${server.port}"
 
 server:
   error:

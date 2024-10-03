@@ -19,4 +19,7 @@ public final class AppProperties {
 
     @Value("${server.port}")
     private String port;
+
+    @Value("${spotify.redirectUrl}")
+    private String redirectUrl;
 }
