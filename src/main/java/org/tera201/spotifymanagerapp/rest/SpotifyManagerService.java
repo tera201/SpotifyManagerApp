@@ -13,11 +13,11 @@ import org.tera201.spotifymanagerapp.rest.outgoing.SearchService;
 import org.tera201.spotifymanagerapp.rest.outgoing.UserService;
 
 import java.util.*;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 
-/**
- * Service for redirecting request, checking params and formatting response
- */
 @Log4j2
 @Service
 @AllArgsConstructor
@@ -32,22 +32,36 @@ public class SpotifyManagerService {
         FileService fileService = new FileService();
         Map<String, List<String>> files = fileService.processAllFilesInPlaylists();
         userService.getAccessToken();
+        int nThreads = Runtime.getRuntime().availableProcessors();
+        ExecutorService executor = Executors.newFixedThreadPool(nThreads);
         for (Map.Entry<String, List<String>> entry : files.entrySet()) {
-            String playlistId = createPlaylistIfNotExist(entry.getKey());
-            List<String> tracksUri = new ArrayList<>();
-            for (String value : entry.getValue()) {
-                String[] parts = value.split(" - ");
-                if (parts.length >= 2) {
-                    String track = parts[0];
-                    String artist = parts[1];
-                    tracksUri.add(findTrackUri(track, artist));
-                } else {
-                    log.error("Split failed for line: {}", entry.getKey());
-                }
-            }
-            addNewTracks(tracksUri, playlistId);
+            executor.submit(() -> {
+                String playlistId = createPlaylistIfNotExist(entry.getKey());
+                List<CompletableFuture<String>> futures = entry.getValue().stream()
+                        .map(value -> CompletableFuture.supplyAsync(() -> processLine(value, entry.getKey())))
+                        .toList();
+                List<String> tracksUri = CompletableFuture.allOf(futures.toArray(new CompletableFuture[0]))
+                        .thenApply(_ -> futures.stream()
+                                .map(CompletableFuture::join) // join для получения результата
+                                .collect(Collectors.toList()))
+                        .join();
+                addNewTracks(tracksUri, playlistId);
+            });
         }
+        executor.shutdown();
         context.close();
+    }
+
+    private String processLine(String value, String playlistName) {
+        String[] parts = value.split(" - ");
+        if (parts.length >= 2) {
+            String track = parts[0];
+            String artist = parts[1];
+            return findTrackUri(track, artist);
+        } else {
+            System.err.println("Ошибка при разбиении строки: " + playlistName);
+            return null;
+        }
     }
 
     public String createPlaylistIfNotExist(String playlistName) {
