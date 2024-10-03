@@ -2,6 +2,7 @@ package org.tera201.spotifymanagerapp.rest;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.stereotype.Service;
 import org.tera201.spotifymanagerapp.rest.model.GetPlaylistsResponseModel;
 import org.tera201.spotifymanagerapp.rest.model.PlaylistResponseModel;
@@ -18,12 +19,14 @@ import java.util.Optional;
 @AllArgsConstructor
 public class SpotifyManagerService {
 
+    private final ConfigurableApplicationContext context;
     private final UserService userService;
     private final PlaylistService playlistService;
 
     public void processUserCode() {
         userService.getAccessToken();
         createPlaylistIfNotExist("TEST2");
+        context.close();
     }
 
     public String createPlaylistIfNotExist(String playlistName) {
