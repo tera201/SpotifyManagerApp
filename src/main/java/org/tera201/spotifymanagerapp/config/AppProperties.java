@@ -11,15 +11,6 @@ import org.springframework.stereotype.Component;
 @Data
 public final class AppProperties {
 
-    @Value("${spotify.client}")
-    private String client;
-
-    @Value("${spotify.secret}")
-    private String secret;
-
     @Value("${server.port}")
     private String port;
-
-    @Value("${spotify.redirectUrl}")
-    private String redirectUrl;
 }

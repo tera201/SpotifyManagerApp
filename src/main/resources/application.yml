@@ -10,6 +10,13 @@ spotify:
   client: @spotify.client@
   secret: @spotify.secret@
   redirectUrl: "http://localhost:${server.port}"
+  scope:
+    - user-read-private
+    - user-read-email
+    - playlist-read-private
+    - playlist-read-collaborative
+    - playlist-modify-public
+    - playlist-modify-private
 
 server:
   error:

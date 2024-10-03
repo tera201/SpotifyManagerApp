@@ -4,7 +4,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.tera201.spotifymanagerapp.config.AppProperties;
+import org.tera201.spotifymanagerapp.config.SpotifyConfig;
 
 import java.awt.*;
 import java.io.IOException;
@@ -14,11 +14,8 @@ import java.util.Random;
 
 @Component
 class DesktopOpener {
-
     @Autowired
-    protected AppProperties appProperties;
-
-    private static final String SCOPE = "user-read-private user-read-email";
+    protected SpotifyConfig spotifyConfig;
 
     @EventListener(ApplicationReadyEvent.class)
     public void init() throws URISyntaxException, IOException {
@@ -43,9 +40,9 @@ class DesktopOpener {
         String state = generateRandomString(16);
         URI uri = new URI("https", "accounts.spotify.com", "/authorize",
                 "response_type=code" +
-                        "&client_id=" + appProperties.getClient() +
-                        "&scope=" + SCOPE +
-                        "&redirect_uri=" + appProperties.getRedirectUrl() +
+                        "&client_id=" + spotifyConfig.getClient() +
+                        "&scope=" + spotifyConfig.getScopeAsString() +
+                        "&redirect_uri=" + spotifyConfig.getRedirectUrl() +
                         "&state=" + state, null);
         return uri.toString();
     }
